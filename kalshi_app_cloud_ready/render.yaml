@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: kalshi-app
+    runtime: docker
+    plan: starter
+    region: oregon
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: KALSHI_ENV
+        value: demo
+      - key: KALSHI_API_KEY_ID
+        sync: false
+      - key: KALSHI_PRIVATE_KEY
+        sync: false
+      - key: KALSHI_REQUEST_TIMEOUT_SECONDS
+        value: "10"
+      - key: DEFAULT_MARKET_LIMIT
+        value: "25"
+      - key: DEFAULT_MAX_SPREAD_CENTS
+        value: "20"
+      - key: DEFAULT_MIN_DEPTH_CONTRACTS
+        value: "0"
+      - key: DEFAULT_ORDERBOOK_DEPTH_CENTS
+        value: "5"
+      - key: DEFAULT_MIN_VOLUME_24H
+        value: "0"
+      - key: DEFAULT_MIN_LIQUIDITY_DOLLARS
+        value: "0"
+      - key: APP_HOST
+        value: 0.0.0.0

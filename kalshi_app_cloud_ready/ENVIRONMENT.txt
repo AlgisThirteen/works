@@ -1,0 +1,103 @@
+KALSHI DEPLOYMENT SETUP
+
+1) Create your environment file
+- Copy .env.example to .env
+- Fill in the values described below
+
+2) Required values for authenticated trading endpoints
+- KALSHI_ENV
+  Allowed values: demo or production
+  Demo uses Kalshi demo endpoints.
+  Production uses Kalshi production endpoints.
+
+- KALSHI_API_KEY_ID
+  Your Kalshi API key ID.
+
+- KALSHI_PRIVATE_KEY_PATH
+  Absolute path to your Kalshi private key file when running locally.
+  Example local value:
+  /Users/you/keys/kalshi-demo.key
+
+- KALSHI_PRIVATE_KEY
+  Optional inline PEM contents for cloud deployments.
+  This is the easiest secret format for Render.
+  If set, it is used instead of KALSHI_PRIVATE_KEY_PATH.
+
+3) Docker-specific key mount value
+- HOST_KALSHI_PRIVATE_KEY_PATH
+  Absolute path to your Kalshi private key file on your host machine.
+  This is used by run.sh docker-run.
+  The script mounts the file into the container at /run/secrets/kalshi-private.key
+  and overrides KALSHI_PRIVATE_KEY_PATH inside the container automatically.
+
+4) Optional tuning values
+- KALSHI_REQUEST_TIMEOUT_SECONDS
+  HTTP timeout for Kalshi API requests.
+
+- DEFAULT_MARKET_LIMIT
+  Default number of markets to display.
+
+- DEFAULT_MAX_SPREAD_CENTS
+  Default max spread filter.
+
+- DEFAULT_MIN_DEPTH_CONTRACTS
+  Optional minimum depth for orderbook refinement.
+
+- DEFAULT_ORDERBOOK_DEPTH_CENTS
+  Price window for depth calculation.
+
+- DEFAULT_MIN_VOLUME_24H
+  Optional 24h volume floor.
+
+- DEFAULT_MIN_LIQUIDITY_DOLLARS
+  Optional liquidity floor.
+
+- APP_HOST
+  Uvicorn bind host. Local default is 0.0.0.0.
+
+- APP_PORT
+  Local port used by run.sh local and the host port exposed by run.sh docker-run.
+
+LOCAL EXAMPLE .env
+KALSHI_ENV=demo
+KALSHI_API_KEY_ID=your-demo-key-id
+KALSHI_PRIVATE_KEY_PATH=/absolute/path/to/your/demo-private.key
+KALSHI_PRIVATE_KEY=
+HOST_KALSHI_PRIVATE_KEY_PATH=/absolute/path/to/your/demo-private.key
+KALSHI_REQUEST_TIMEOUT_SECONDS=10
+DEFAULT_MARKET_LIMIT=25
+DEFAULT_MAX_SPREAD_CENTS=20
+DEFAULT_MIN_DEPTH_CONTRACTS=0
+DEFAULT_ORDERBOOK_DEPTH_CENTS=5
+DEFAULT_MIN_VOLUME_24H=0
+DEFAULT_MIN_LIQUIDITY_DOLLARS=0
+APP_HOST=0.0.0.0
+APP_PORT=8000
+
+RENDER EXAMPLE SECRETS
+KALSHI_ENV=demo
+KALSHI_API_KEY_ID=your-demo-key-id
+KALSHI_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----"
+
+LOCAL RUN
+- ./run.sh setup-env
+- edit .env
+- ./run.sh install
+- ./run.sh test
+- ./run.sh local
+- open http://localhost:8000
+
+DOCKER RUN
+- ./run.sh setup-env
+- edit .env
+- ./run.sh docker-build
+- ./run.sh docker-run
+- open http://localhost:8000
+- view logs with ./run.sh docker-logs
+- stop with ./run.sh docker-stop
+
+NOTES
+- Demo and production credentials are separate.
+- If you only want public recommendation scans, you can leave the key fields blank.
+  Authenticated routes like /balance, /positions, and /orders will return HTTP 400 until credentials are configured.
+- Do not commit .env or your private key file.
